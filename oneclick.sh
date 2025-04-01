@@ -7,27 +7,22 @@
 # sh -c "$(curl -kfsSL http://192.168.4.126:4000/oneclick.sh)"
 
 cat << EOF
-      ___           ___           ___           ___    
-     /  /\         /__/\         /__/\         /  /\   
-    /  /::\        \  \:\       |  |::\       /  /::\  
-   /  /:/\:\        \  \:\      |  |:|:\     /  /:/\:\ 
-  /  /:/  \:\   _____\__\:\   __|__|:|\:\   /  /:/~/:/ 
- /__/:/ \__\:\ /__/::::::::\ /__/::::| \:\ /__/:/ /:/  
- \  \:\ /  /:/ \  \:\~~\~~\/ \  \:\~~\__\/ \  \:\/:/   
-  \  \:\  /:/   \  \:\  ~~~   \  \:\        \  \::/    
-   \  \:\/:/     \  \:\        \  \:\        \  \:\    
-    \  \::/       \  \:\        \  \:\        \  \:\   
-     \__\/         \__\/         \__\/         \__\/   
+  /$$$$$$  /$$   /$$ /$$      /$$ /$$$$$$$   /$$$$$$ 
+ /$$__  $$| $$$ | $$| $$$    /$$$| $$__  $$ /$$__  $$
+| $$  \ $$| $$$$| $$| $$$$  /$$$$| $$  \ $$|__/  \ $$
+| $$  | $$| $$ $$ $$| $$ $$/$$ $$| $$$$$$$/  /$$$$$$/
+| $$  | $$| $$  $$$$| $$  $$$| $$| $$____/  /$$____/ 
+| $$  | $$| $$\  $$$| $$\  $ | $$| $$      | $$      
+|  $$$$$$/| $$ \  $$| $$ \/  | $$| $$      | $$$$$$$$
+ \______/ |__/  \__/|__/     |__/|__/      |________/
 
 =======================================================
 
-ONMP 是一个 web 环境快速安装脚本，适用于安装了
+ONMP2 是一个 web 环境快速安装脚本，适用于安装了
 Entware 的路由器，目前已经在 Padavan、
 LEDE（openwrt）、梅林上测试成功。
 
-项目地址：https://github.com/xzhih/ONMP
-
-更多使用教程：https://zhih.me
+项目地址：https://gitcode.com/Xuan_er123/onmp2
 
 EOF
 
@@ -37,7 +32,7 @@ Install()
 	mkdir -p /opt/onmp
 
     # 获取onmp脚本
-    curl -kfsSL https://raw.githubusercontent.com/xzhih/ONMP/master/onmp.sh > /opt/onmp/onmp.sh
+    curl -kfsSL https://gitcode.com/Xuan_er123/onmp2/blob/main/onmp.sh > /opt/onmp/onmp.sh
     # curl -kfsSL http://192.168.4.126:4000/onmp.sh > /opt/onmp/onmp.sh
     chmod +x /opt/onmp/onmp.sh
 
@@ -50,7 +45,7 @@ Install()
 Updata()
 {
 	rm -rf /opt/onmp/onmp.sh
-	curl -kfsSL https://raw.githubusercontent.com/xzhih/ONMP/master/onmp.sh > /opt/onmp/onmp.sh
+	curl -kfsSL https://gitcode.com/Xuan_er123/onmp2/blob/main/onmp.sh > /opt/onmp/onmp.sh
 	# curl -kfsSL http://192.168.4.126:4000/onmp.sh > /opt/onmp/onmp.sh
 	chmod +x /opt/onmp/onmp.sh
 	/opt/onmp/onmp.sh renewsh > /dev/null 2>&1
