@@ -31,7 +31,7 @@ Install()
 	mkdir -p /opt/onmp
 
     # 获取onmp脚本
-    curl -kfsSL https://gitcode.com/Xuan_er123/onmp2/blob/main/onmp.sh > /opt/onmp/onmp.sh
+    curl -kfsSL https://raw.gitcode.com/Xuan_er123/onmp2/blobs/ad2155646d2505fff0caebd02171ad680ec2cf32/onmp.sh > /opt/onmp/onmp.sh
     # curl -kfsSL http://192.168.4.126:4000/onmp.sh > /opt/onmp/onmp.sh
     chmod +x /opt/onmp/onmp.sh
 
