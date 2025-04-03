@@ -1,11 +1,11 @@
 ONMP
-===
+====
 
 适用于安装了Entware固件的onmp一键安装命令
 
-目前已经在Padavan、LEDE、梅林上测试成功
+目前已经在 OpenWrt 上测试成功
 
-`php-fpm` 和 `mysqld` 启动失败的可以开启swap
+`php8-fpm` 和 `mysqld` 启动失败的可以开启swap
 
 ```
 $ onmp open 
