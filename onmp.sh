@@ -5,7 +5,7 @@
 # @Last Modified time: 2019-06-09 11:39:26
 
 # 软件包列表
-pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php8 php8-cgi php8-cli php8-fastcgi php8-fpm php8-mod-mysqli php8-mod-pdo php8-mod-pdo-mysql nginx-ssl nginx-mod-brotli nginx-mod-stream nginx-mod-dav-ext nginx-mod-njs mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra"
+pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php8 php8-cgi php8-cli php8-fastcgi php8-fpm php8-mod-mysqli php8-mod-pdo php8-mod-pdo-mysql nginx-ssl nginx-mod-brotli nginx-mod-stream nginx-mod-dav-ext nginx-mod-njs mariadb-server-base mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra"
 
 phpmod="php8-mod-calendar php8-mod-ctype php8-mod-curl php8-mod-dom php8-mod-exif php8-mod-fileinfo php8-mod-ftp php8-mod-gd php8-mod-gettext php8-mod-gmp php8-mod-iconv php8-mod-intl php8-mod-ldap php8-mod-session php8-mod-mbstring php8-mod-opcache php8-mod-openssl php8-mod-pcntl php8-mod-phar php8-pecl-redis php8-mod-session php8-mod-shmop php8-mod-simplexml php8-mod-snmp php8-mod-soap php8-mod-sockets php8-mod-sqlite3 php8-mod-sysvmsg php8-mod-sysvsem php8-mod-sysvshm php8-mod-tokenizer php8-mod-xml php8-mod-xmlreader php8-mod-xmlwriter php8-mod-zip php8-pecl-dio php8-pecl-http php8-pecl-event php8-pecl-raphf redis snmpd snmp-mibs snmp-utils zoneinfo-core zoneinfo-asia"
 
@@ -151,7 +151,7 @@ init_onmp()
     # 添加探针
     cp /opt/onmp/tz.php /opt/wwwroot/default -R
     add_vhost 81 default
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/default.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/default.conf
     chmod -R 777 /opt/wwwroot/default
 
     # 生成ONMP命令
@@ -217,8 +217,8 @@ nginx_special_conf
 ##### 特定程序的nginx配置 #####
 nginx_special_conf()
 {
-# php-fpm
-cat > "/opt/etc/nginx/conf/php-fpm.conf" <<-\OOO
+# php8-fpm
+cat > "/opt/etc/nginx/conf/php8-fpm.conf" <<-\OOO
 location ~ \.php(?:$|/) {
     fastcgi_split_path_info ^(.+\.php)(/.+)$; 
     fastcgi_pass unix:/opt/var/run/php8-fpm.sock;
@@ -423,7 +423,7 @@ if (!-e $request_filename) {
 OOO
 
 }
-
+:<<EOF
 ############## 重置、初始化MySQL #############
 init_sql()
 {
@@ -476,45 +476,46 @@ key_buffer_size    = 24M
 interactive-timeout
 MMM
 
-sed -e "s/theOne/$username/g" -i /opt/etc/mysql/my.cnf
+    sed -e "s/theOne/$username/g" -i /opt/etc/mysql/my.cnf
 
-chmod 644 /opt/etc/mysql/my.cnf
+    chmod 644 /opt/etc/mysql/my.cnf
 
-mkdir -p /opt/var/mysql
+    mkdir -p /opt/var/mysql
 
-# 数据库安装
-/opt/bin/mysql_install_db --user=$username --basedir=/opt --datadir=/opt/var/mysql/
-echo -e "\n正在初始化数据库，请稍等1分钟"
-sleep 20
+    # 数据库安装
+    /opt/bin/mysql_install_db --user=$username --basedir=/opt --datadir=/opt/var/mysql/
+    echo -e "\n正在初始化数据库，请稍等1分钟"
+    sleep 20
 
-# 初次启动MySQL
-/opt/etc/init.d/S70mysqld start
-sleep 60
+    # 初次启动MySQL
+    /opt/etc/init.d/S70mysqld start
+    sleep 60
 
-# 设置数据库密码
-mysqladmin -u root password 123456
-echo -e "\033[41;37m 数据库用户：root, 初始密码：123456 \033[0m"
-onmp restart
+    # 设置数据库密码
+    mysqladmin -u root password 123456
+    echo -e "\033[41;37m 数据库用户：root, 初始密码：123456 \033[0m"
+    onmp restart
 }
+EOF
 
 ############## PHP初始化 #############
 init_php()
 {
-# php8设置 
-/opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
+    # php8设置 
+    /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
 
-mkdir -p /opt/usr/php/tmp/
-chmod -R 777 /opt/usr/php/tmp/
+    mkdir -p /opt/usr/php/tmp/
+    chmod -R 777 /opt/usr/php/tmp/
 
-sed -e "/^doc_root/d" -i /opt/etc/php.ini
-sed -e "s/.*memory_limit = .*/memory_limit = 128M/g" -i /opt/etc/php.ini
-sed -e "s/.*output_buffering = .*/output_buffering = 4096/g" -i /opt/etc/php.ini
-sed -e "s/.*post_max_size = .*/post_max_size = 8000M/g" -i /opt/etc/php.ini
-sed -e "s/.*max_execution_time = .*/max_execution_time = 2000 /g" -i /opt/etc/php.ini
-sed -e "s/.*upload_max_filesize.*/upload_max_filesize = 8000M/g" -i /opt/etc/php.ini
-sed -e "s/.*listen.mode.*/listen.mode = 0666/g" -i /opt/etc/php8-fpm.d/www.conf
+    sed -e "/^doc_root/d" -i /opt/etc/php.ini
+    sed -e "s/.*memory_limit = .*/memory_limit = 128M/g" -i /opt/etc/php.ini
+    sed -e "s/.*output_buffering = .*/output_buffering = 4096/g" -i /opt/etc/php.ini
+    sed -e "s/.*post_max_size = .*/post_max_size = 8000M/g" -i /opt/etc/php.ini
+    sed -e "s/.*max_execution_time = .*/max_execution_time = 2000 /g" -i /opt/etc/php.ini
+    sed -e "s/.*upload_max_filesize.*/upload_max_filesize = 8000M/g" -i /opt/etc/php.ini
+    sed -e "s/.*listen.mode.*/listen.mode = 0666/g" -i /opt/etc/php8-fpm.d/www.conf
 
-# PHP配置文件
+    # PHP配置文件
 cat >> "/opt/etc/php.ini" <<-\PHPINI
 session.save_path = "/opt/usr/php/tmp/"
 opcache.enable=1
@@ -556,7 +557,7 @@ remove_onmp()
     /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
     /opt/etc/init.d/S80nginx stop > /dev/null 2>&1
     /opt/etc/init.d/S70redis stop > /dev/null 2>&1
-    killall -9 nginx mysqld php-fpm redis-server > /dev/null 2>&1
+    killall -9 nginx mysqld php8-fpm redis-server > /dev/null 2>&1
     for pkg in $pkglist; do
         opkg remove $pkg --force-depends
     done
@@ -606,17 +607,20 @@ vhost_list()
 
 onmp_restart()
 {
-    /opt/etc/init.d/S70mysqld stop > /dev/null 2>&1
-    /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
     /opt/etc/init.d/S80nginx stop > /dev/null 2>&1
-    killall -9 nginx mysqld php-fpm > /dev/null 2>&1
+    /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
+    /opt/etc/init.d/S70mysqld stop > /dev/null 2>&1
+    
+    killall -15 nginx mysqld php8-fpm > /dev/null 2>&1
+    sleep 3
+    killall -9 nginx mysqld php8-fpm > /dev/null 2>&1
     sleep 3
     /opt/etc/init.d/S70mysqld start > /dev/null 2>&1
     /opt/etc/init.d/S79php8-fpm start > /dev/null 2>&1
     /opt/etc/init.d/S80nginx start > /dev/null 2>&1
     sleep 3
     num=0
-    for PROC in 'nginx' 'php-fpm' 'mysqld'; do 
+    for PROC in 'nginx' 'php8-fpm' 'mysqld'; do 
         if [ -n "`pidof $PROC`" ]; then
             echo $PROC "启动成功";
         else
@@ -889,7 +893,7 @@ fi
 
 #     # 添加到虚拟主机
 #     add_vhost $port $webdir
-#     sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加公共php-fpm支持
+#     sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加公共php8-fpm支持
 #     onmp restart >/dev/null 2>&1
 #     echo "$name安装完成"
 #     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -915,7 +919,7 @@ install_phpmyadmin()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -938,7 +942,7 @@ install_wordpress()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    # WordPress的配置文件中有php-fpm了, 不需要外部引入
+    # WordPress的配置文件中有php8-fpm了, 不需要外部引入
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/wordpress.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
@@ -964,7 +968,7 @@ install_h5ai()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     sed -e "s/.*\index index.html.*/    index  index.html  index.php  \/_h5ai\/public\/index.php;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
@@ -989,7 +993,7 @@ install_lychee()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1014,7 +1018,7 @@ install_owncloud()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    # Owncloud的配置文件中有php-fpm了, 不需要外部引入
+    # Owncloud的配置文件中有php8-fpm了, 不需要外部引入
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/owncloud.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
 
     onmp restart >/dev/null 2>&1
@@ -1042,7 +1046,7 @@ install_nextcloud()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    # nextcloud的配置文件中有php-fpm了, 不需要外部引入
+    # nextcloud的配置文件中有php8-fpm了, 不需要外部引入
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/nextcloud.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
 
     onmp restart >/dev/null 2>&1
@@ -1070,7 +1074,7 @@ install_kodexplorer()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1093,7 +1097,7 @@ install_typecho()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php-fpm支持
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php8-fpm支持
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/typecho.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
@@ -1118,7 +1122,7 @@ install_zblog()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php-fpm支持
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php8-fpm支持
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1140,7 +1144,7 @@ install_dzzoffice()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php-fpm支持
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php8-fpm支持
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1157,7 +1161,7 @@ server {
     server_name localhost;
     root /opt/wwwroot/www/;
     index index.html index.htm index.php tz.php;
-    #php-fpm
+    #php8-fpm
     #otherconf
 }
 EOF
