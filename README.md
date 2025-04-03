@@ -1,5 +1,9 @@
-ONMP
-====
+ONMP2
+=====
+
+源地址：[GitCode-onmp2](https://gitcode.com/Xuan_er123/onmp2)
+
+镜像地址：[GitHub-onmp2](https://github.com/Xuaner183/onmp2)
 
 适用于安装了Entware固件的onmp一键安装命令
 
