@@ -5,9 +5,9 @@
 # @Last Modified time: 2019-06-09 11:39:26
 
 # 软件包列表
-pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php8 php8-cgi php8-cli php8-fastcgi php8-fpm php8-mod-mysqli php8-mod-pdo php8-mod-pdo-mysql nginx-ssl nginx-mod-brotli nginx-mod-stream nginx-mod-dav-ext nginx-mod-njs mariadb-server-base mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra"
+pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php8 php8-cgi php8-cli php8-fastcgi php8-fpm php8-mod-mysqli php8-mod-pdo php8-mod-pdo-mysql nginx-ssl nginx-mod-brotli nginx-mod-stream nginx-mod-dav-ext nginx-mod-njs mariadb-server-base mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra openssl-util"
 
-phpmod="php8-mod-calendar php8-mod-ctype php8-mod-curl php8-mod-dom php8-mod-exif php8-mod-fileinfo php8-mod-ftp php8-mod-gd php8-mod-gettext php8-mod-gmp php8-mod-iconv php8-mod-intl php8-mod-ldap php8-mod-session php8-mod-mbstring php8-mod-opcache php8-mod-openssl php8-mod-pcntl php8-mod-phar php8-pecl-redis php8-mod-session php8-mod-shmop php8-mod-simplexml php8-mod-snmp php8-mod-soap php8-mod-sockets php8-mod-sqlite3 php8-mod-sysvmsg php8-mod-sysvsem php8-mod-sysvshm php8-mod-tokenizer php8-mod-xml php8-mod-xmlreader php8-mod-xmlwriter php8-mod-zip php8-pecl-dio php8-pecl-http php8-pecl-event php8-pecl-raphf redis snmpd snmp-mibs snmp-utils zoneinfo-core zoneinfo-asia"
+phpmod="php8-mod-calendar php8-mod-ctype php8-mod-curl php8-mod-dom php8-mod-exif php8-mod-fileinfo php8-mod-ftp php8-mod-gd php8-mod-gettext php8-mod-gmp php8-mod-iconv php8-mod-intl php8-mod-ldap php8-mod-session php8-mod-mbstring php8-mod-opcache php8-mod-openssl php8-mod-pcntl php8-mod-phar php8-pecl-redis php8-mod-session php8-mod-shmop php8-mod-simplexml php8-mod-snmp php8-mod-soap php8-mod-sockets php8-mod-sqlite3 php8-mod-sysvmsg php8-mod-sysvsem php8-mod-sysvshm php8-mod-tokenizer php8-mod-xml php8-mod-xmlreader php8-mod-xmlwriter php8-mod-zip php8-mod-filter php8-pecl-dio php8-pecl-http php8-pecl-event php8-pecl-raphf redis snmpd snmp-mibs snmp-utils zoneinfo-core zoneinfo-asia"
 
 # 后续可能增加的包(缺少源支持)
 # php8-mod-imagick imagemagick imagemagick-jpeg imagemagick-png imagemagick-tiff imagemagick-tools
@@ -423,7 +423,7 @@ if (!-e $request_filename) {
 OOO
 
 }
-:<<EOF
+
 ############## 重置、初始化MySQL #############
 init_sql()
 {
@@ -439,12 +439,12 @@ init_sql()
 cat > "/opt/etc/mysql/my.cnf" <<-\MMM
 [client-server]
 port               = 3306
-socket             = /opt/var/run/mysqld.sock
+socket             = /opt/var/run/mysqld/mysqld.sock
 
 [mysqld]
 user               = theOne
-socket             = /opt/var/run/mysqld.sock
-pid-file           = /opt/var/run/mysqld.pid
+socket             = /opt/var/run/mysqld/mysqld.sock
+pid-file           = /opt/var/run/mysqld/mysqld.pid
 basedir            = /opt
 lc_messages_dir    = /opt/share/mariadb
 lc_messages        = en_US
@@ -483,7 +483,7 @@ MMM
     mkdir -p /opt/var/mysql
 
     # 数据库安装
-    /opt/bin/mysql_install_db --user=$username --basedir=/opt --datadir=/opt/var/mysql/
+    /opt/bin/mariadb_install_db --user=$username --basedir=/opt --datadir=/opt/var/mysql/
     echo -e "\n正在初始化数据库，请稍等1分钟"
     sleep 20
 
@@ -496,7 +496,7 @@ MMM
     echo -e "\033[41;37m 数据库用户：root, 初始密码：123456 \033[0m"
     onmp restart
 }
-EOF
+
 
 ############## PHP初始化 #############
 init_php()
@@ -527,8 +527,8 @@ opcache.save_comments=1
 opcache.revalidate_freq=60
 opcache.fast_shutdown=1
 
-mysqli.default_socket=/opt/var/run/mysqld.sock
-pdo_mysql.default_socket=/opt/var/run/mysqld.sock
+mysqli.default_socket=/opt/var/run/mysqld/mysqld.sock
+pdo_mysql.default_socket=/opt/var/run/mysqld/mysqld.sock
 PHPINI
 
 cat >> "/opt/etc/php8-fpm.d/www.conf" <<-\PHPFPM
