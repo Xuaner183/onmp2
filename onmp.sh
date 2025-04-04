@@ -5,12 +5,12 @@
 # @Last Modified time: 2019-06-09 11:39:26
 
 # 软件包列表
-pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php8 php8-cgi php8-cli php8-fastcgi php8-fpm php8-mod-mysqli php8-mod-pdo php8-mod-pdo-mysql nginx-ssl nginx-mod-brotli nginx-mod-stream nginx-mod-dav-ext nginx-mod-njs mariadb-server-base mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra openssl-util"
+pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php8 php8-cgi php8-cli php8-fastcgi php8-fpm php8-mod-mysqli php8-mod-pdo php8-mod-pdo-mysql nginx-ssl nginx-mod-brotli nginx-mod-stream nginx-mod-dav-ext nginx-mod-njs mariadb-server-base mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra openssl-util "
 
-phpmod="php8-mod-calendar php8-mod-ctype php8-mod-curl php8-mod-dom php8-mod-exif php8-mod-fileinfo php8-mod-ftp php8-mod-gd php8-mod-gettext php8-mod-gmp php8-mod-iconv php8-mod-intl php8-mod-ldap php8-mod-session php8-mod-mbstring php8-mod-opcache php8-mod-openssl php8-mod-pcntl php8-mod-phar php8-pecl-redis php8-mod-session php8-mod-shmop php8-mod-simplexml php8-mod-snmp php8-mod-soap php8-mod-sockets php8-mod-sqlite3 php8-mod-sysvmsg php8-mod-sysvsem php8-mod-sysvshm php8-mod-tokenizer php8-mod-xml php8-mod-xmlreader php8-mod-xmlwriter php8-mod-zip php8-mod-filter php8-pecl-dio php8-pecl-http php8-pecl-event php8-pecl-raphf redis snmpd snmp-mibs snmp-utils zoneinfo-core zoneinfo-asia"
+phpmod="php8-mod-calendar php8-mod-ctype php8-mod-curl php8-mod-dom php8-mod-exif php8-mod-fileinfo php8-mod-ftp php8-mod-gd php8-mod-gettext php8-mod-gmp php8-mod-iconv php8-mod-intl php8-mod-ldap php8-mod-session php8-mod-mbstring php8-mod-opcache php8-mod-openssl php8-mod-pcntl php8-mod-phar php8-pecl-redis php8-mod-session php8-mod-shmop php8-mod-simplexml php8-mod-snmp php8-mod-soap php8-mod-sockets php8-mod-sqlite3 php8-mod-sysvmsg php8-mod-sysvsem php8-mod-sysvshm php8-mod-tokenizer php8-mod-xml php8-mod-xmlreader php8-mod-xmlwriter php8-mod-zip php8-mod-filter php8-mod-bcmath php8-pecl-imagick php8-pecl-dio php8-pecl-http php8-pecl-event php8-pecl-raphf redis-server redis-cli snmpd snmp-mibs snmp-utils zoneinfo-core zoneinfo-asia"
 
 # 后续可能增加的包(缺少源支持)
-# php8-mod-imagick imagemagick imagemagick-jpeg imagemagick-png imagemagick-tiff imagemagick-tools
+# imagemagick imagemagick-jpeg imagemagick-png imagemagick-tiff imagemagick-tools
 
 # Web程序
 # (1) phpMyAdmin（数据库管理工具）
@@ -452,6 +452,8 @@ innodb_use_native_aio = 0
 datadir            = /opt/var/mysql/
 tmpdir             = /opt/tmp/
 
+sort_buffer_size = 1024K
+
 skip-external-locking
 
 bind-address       = 127.0.0.1
@@ -508,7 +510,7 @@ init_php()
     chmod -R 777 /opt/usr/php/tmp/
 
     sed -e "/^doc_root/d" -i /opt/etc/php.ini
-    sed -e "s/.*memory_limit = .*/memory_limit = 128M/g" -i /opt/etc/php.ini
+    sed -e "s/.*memory_limit = .*/memory_limit = 2048M/g" -i /opt/etc/php.ini
     sed -e "s/.*output_buffering = .*/output_buffering = 4096/g" -i /opt/etc/php.ini
     sed -e "s/.*post_max_size = .*/post_max_size = 8000M/g" -i /opt/etc/php.ini
     sed -e "s/.*max_execution_time = .*/max_execution_time = 2000 /g" -i /opt/etc/php.ini
